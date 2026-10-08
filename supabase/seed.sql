@@ -48,11 +48,11 @@ values
   ('b0000000-0000-4000-8000-000000000002', '22222222-2222-4222-8222-222222222222', 'Breathwork', 'Guided breathing and relaxation.', 45, 4500);
 
 insert into public.availability (profile_id, weekday, start_time, end_time)
-select '11111111-1111-4111-8111-111111111111', d, t.s, t.e
+select '11111111-1111-4111-8111-111111111111'::uuid, d, t.s, t.e
 from generate_series(1, 5) as d,
      (values (time '09:00', time '12:00'), (time '13:00', time '18:00')) as t (s, e)
 union all
-select '22222222-2222-4222-8222-222222222222', d, time '07:00', time '11:00'
+select '22222222-2222-4222-8222-222222222222'::uuid, d, time '07:00', time '11:00'
 from unnest(array[1, 3, 5, 6]) as d;
 
 insert into public.clients (id, profile_id, name, email, phone, created_at)
