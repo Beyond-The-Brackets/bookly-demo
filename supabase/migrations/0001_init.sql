@@ -71,8 +71,6 @@ create unique index bookings_no_double_booking_idx
 alter table public.profiles enable row level security;
 alter table public.services enable row level security;
 alter table public.availability enable row level security;
-alter table public.clients enable row level security;
-alter table public.bookings enable row level security;
 
 create policy "Profiles are public"
   on public.profiles for select
@@ -98,20 +96,6 @@ create policy "Availability is public"
 
 create policy "Practitioners manage their availability"
   on public.availability for all
-  using ((select auth.uid()) = profile_id)
-  with check ((select auth.uid()) = profile_id);
-
-create policy "Practitioners manage their clients"
-  on public.clients for all
-  using ((select auth.uid()) = profile_id)
-  with check ((select auth.uid()) = profile_id);
-
-create policy "Practitioners read their bookings"
-  on public.bookings for select
-  using ((select auth.uid()) = profile_id);
-
-create policy "Practitioners update their bookings"
-  on public.bookings for update
   using ((select auth.uid()) = profile_id)
   with check ((select auth.uid()) = profile_id);
 
