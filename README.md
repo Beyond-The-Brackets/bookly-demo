@@ -33,15 +33,16 @@ Requirements: Node 20+, pnpm, and Docker (for the local Supabase stack).
 ```bash
 pnpm install
 
-# 1. Start Supabase locally. The first run pulls the Docker images.
+# 1. Start Supabase locally. The first run pulls the Docker images,
+#    then applies supabase/migrations and supabase/seed.sql.
 npx supabase start
 
-# 2. Apply the migration and the seed data
+# 2. (later) Wipe the local database and re-apply migration + seed
 npx supabase db reset
 
 # 3. Configure the app
 cp .env.example .env.local
-# paste the "anon key" printed by `npx supabase start` (or `npx supabase status`)
+# paste the ANON_KEY printed by `npx supabase start` (or `npx supabase status -o env`)
 # into NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # 4. Run it
