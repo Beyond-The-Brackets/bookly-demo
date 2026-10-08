@@ -19,7 +19,6 @@ export async function GET(_request: Request, { params }: { params: { id: string 
       "id, starts_at, ends_at, status, price_paid_cents, cancellation_fee_cents, cancelled_at, notes, created_at, service:services(id, name, duration_minutes), client:clients(id, name, email, phone)"
     )
     .eq("id", params.id)
-    .eq("profile_id", user.id)
     .maybeSingle();
 
   if (error) {
