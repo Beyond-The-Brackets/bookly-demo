@@ -2,13 +2,28 @@ import { CalendarX } from "lucide-react";
 
 import { BookingCard } from "@/components/BookingCard";
 import { toDateKey } from "@/lib/dates";
-import { formatBookingDate } from "@/lib/format";
 import type { BookingWithRelations } from "@/lib/types";
 
 interface Props {
   bookings: BookingWithRelations[];
   timeZone: string;
   currency: string;
+}
+
+function getDateParts(value: string | Date, timeZone: string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const day = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+  const time = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(date);
+  const zone =
+    new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" })
+      .formatToParts(date)
+      .find((part) => part.type === "timeZoneName")?.value ?? timeZone;
+  return { day, time, zone };
 }
 
 export function UpcomingList({ bookings, timeZone, currency }: Props) {
@@ -33,7 +48,7 @@ export function UpcomingList({ bookings, timeZone, currency }: Props) {
       {Array.from(groups.entries()).map(([day, items]) => (
         <section key={day}>
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            {formatBookingDate(items[0].starts_at, timeZone)}
+            {getDateParts(items[0].starts_at, timeZone).day}
           </h2>
           <div className="space-y-3">
             {items.map((booking) => (

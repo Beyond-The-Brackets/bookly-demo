@@ -2,7 +2,7 @@ import { Mail, Phone } from "lucide-react";
 
 import { CancelBookingButton } from "@/components/CancelBookingButton";
 import { Badge } from "@/components/ui/badge";
-import { formatBookingRange, formatDuration, formatPrice } from "@/lib/format";
+import { formatDuration, formatPrice } from "@/lib/format";
 import type { BookingWithRelations } from "@/lib/types";
 
 interface Props {
@@ -11,12 +11,31 @@ interface Props {
   currency: string;
 }
 
+function formatDateParts(value: string | Date, timeZone: string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const day = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+  const time = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(date);
+  const zone =
+    new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" })
+      .formatToParts(date)
+      .find((part) => part.type === "timeZoneName")?.value ?? timeZone;
+  return { day, time, zone };
+}
+
 export function BookingCard({ booking, timeZone, currency }: Props) {
+  const start = formatDateParts(booking.starts_at, timeZone);
+  const end = formatDateParts(booking.ends_at, timeZone);
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1">
         <p className="text-sm font-medium text-primary">
-          {formatBookingRange(booking.starts_at, booking.ends_at, timeZone)}
+          {start.time} – {end.time} {start.zone}
         </p>
         <p className="font-semibold">{booking.client?.name ?? "Unknown client"}</p>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
