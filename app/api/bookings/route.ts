@@ -1,26 +1,16 @@
 import { NextResponse } from "next/server";
 
 import { addMinutes } from "@/lib/dates";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { isSlotAvailable } from "@/lib/slots";
 import { createClient } from "@/lib/supabase-server";
 import type { Availability, BusyInterval } from "@/lib/types";
 import { bookingRequestSchema, firstError } from "@/lib/validation";
 
-const BOOKING_LIMIT = { limit: 5, windowMs: 10 * 60_000 };
-
-function error(message: string, status: number, headers?: HeadersInit) {
-  return NextResponse.json({ error: message }, { status, headers });
+function error(message: string, status: number) {
+  return NextResponse.json({ error: message }, { status });
 }
 
 export async function POST(request: Request) {
-  const limited = rateLimit(`bookings:${clientIp(request)}`, BOOKING_LIMIT);
-  if (!limited.ok) {
-    return error("Too many booking attempts. Please try again in a few minutes.", 429, {
-      "Retry-After": String(limited.retryAfter),
-    });
-  }
-
   const parsed = bookingRequestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return error(firstError(parsed.error), 400);
 
