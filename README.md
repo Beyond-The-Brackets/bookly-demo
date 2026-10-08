@@ -1,3 +1,13 @@
+> [!WARNING]
+> **⚠️ Intentionally vulnerable demo app — do not deploy.**
+>
+> Bookly is the demo app of [Grace](https://agent-grace.com). It was written to look like a typical
+> AI-generated app, and it ships with **deliberately planted problems** (security, tests,
+> performance, duplication) so that Grace's onboarding demo has something real to find and fix.
+> Do not run it on the internet, do not reuse its code, and do not put real data in it.
+> The Supabase key embedded in the code is **fake** and works against no project.
+> See [SECURITY.md](SECURITY.md).
+
 # Bookly
 
 Online booking for independents — coaches, physios, yoga teachers. Practitioners get a public booking

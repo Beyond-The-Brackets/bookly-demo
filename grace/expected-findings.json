@@ -1,0 +1,62 @@
+{
+  "app": "bookly-demo",
+  "tag": "demo-v1",
+  "design": "Grace docs/onboarding/onb-09-demo-app-bookly.md (sections 2, 3 and 6)",
+  "matching": "A planted problem counts as found when one audit finding has the expected type (or one of also_accept_types), touches at least one of paths, and contains every must_mention stem, case-insensitively, in its title, description or plain-language fields.",
+  "expected_scores": {
+    "security": { "max": 40, "target": 26 },
+    "global": { "min": 35, "max": 60, "target": 45 },
+    "top_of_list": ["P1", "P2"]
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "title": "Supabase service_role key shipped to the browser, and no row level security on clients and bookings",
+      "type": "security",
+      "severity": "critical",
+      "paths": ["lib/supabase.ts", "supabase/migrations/0001_init.sql"],
+      "must_mention": ["service_role"]
+    },
+    {
+      "id": "P2",
+      "title": "GET /api/bookings/[id] returns any practitioner's booking (IDOR)",
+      "type": "security",
+      "severity": "critical",
+      "paths": ["app/api/bookings/[id]/route.ts"],
+      "must_mention": ["other", "booking"]
+    },
+    {
+      "id": "P3",
+      "title": "No rate limiting on the public POST /api/bookings endpoint",
+      "type": "security",
+      "severity": "high",
+      "paths": ["app/api/bookings/route.ts"],
+      "must_mention": ["limit", "booking"]
+    },
+    {
+      "id": "P4",
+      "title": "Cancellation fee calculation has no tests",
+      "type": "test",
+      "severity": "medium",
+      "paths": ["lib/billing.ts"],
+      "must_mention": ["cancellation", "test"]
+    },
+    {
+      "id": "P5",
+      "title": "N+1: the client list runs one bookings query per client",
+      "type": "performance",
+      "severity": "medium",
+      "paths": ["app/dashboard/clients/page.tsx"],
+      "must_mention": ["quer", "client"]
+    },
+    {
+      "id": "P6",
+      "title": "Date/time + time-zone formatting copied into three components",
+      "type": "clarity",
+      "also_accept_types": ["ai_signature", "quality", "tech_debt"],
+      "severity": "low",
+      "paths": ["components/BookingCard.tsx", "components/UpcomingList.tsx", "app/book/[slug]/Confirm.tsx"],
+      "must_mention": ["date", "format"]
+    }
+  ]
+}
