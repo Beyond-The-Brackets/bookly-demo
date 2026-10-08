@@ -7,15 +7,8 @@ Bookly is the demo application used by [Grace](https://agent-grace.com) during o
 to report and a fix to replay. They are not bugs to report, and this app must never be deployed or
 exposed to the internet.
 
-- **The embedded Supabase key is fake.** The `service_role` JWT in `lib/supabase.ts` has the right
-  shape (its payload says `"role": "service_role"`, `"ref": "bookly-demo"`) but is signed with a
-  throwaway secret. It belongs to no Supabase project and grants access to nothing.
-- Because it looks like a real key, secret scanners (GitHub push protection, gitleaks, …) may flag
-  it. That is expected for this repository; do not "fix" it by deleting the history — the audit
-  demo depends on it.
-- All seed data is fictitious (`@example.com` addresses, made-up names and phone numbers).
-
-The list of planted problems, with the files they live in, is in `grace/expected-findings.json`.
+- No credential in this repository works against a real service, and all seed data is fictitious.
+  Secret scanners (GitHub push protection, gitleaks, …) may still flag it: that is expected here.
 
 ## Reporting a problem in Grace itself
 
