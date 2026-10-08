@@ -9,21 +9,26 @@ import type { Client } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Clients" };
 
-type ClientRow = Pick<Client, "id" | "name" | "email" | "phone" | "created_at"> & {
-  bookings: { count: number }[];
-};
+type ClientRow = Pick<Client, "id" | "name" | "email" | "phone" | "created_at">;
 
 export default async function ClientsPage() {
   const { supabase, profile } = await requireProfile();
 
   const { data } = await supabase
     .from("clients")
-    .select("id, name, email, phone, created_at, bookings(count)")
+    .select("id, name, email, phone, created_at")
     .eq("profile_id", profile.id)
     .order("name", { ascending: true })
     .returns<ClientRow[]>();
 
-  const clients = (data ?? []).map((c) => ({ ...c, bookingCount: c.bookings[0]?.count ?? 0 }));
+  const clients: (ClientRow & { bookingCount: number })[] = [];
+  for (const client of data ?? []) {
+    const { count } = await supabase
+      .from("bookings")
+      .select("id", { count: "exact", head: true })
+      .eq("client_id", client.id);
+    clients.push({ ...client, bookingCount: count ?? 0 });
+  }
 
   return (
     <div className="space-y-8">
