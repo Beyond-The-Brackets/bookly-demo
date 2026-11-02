@@ -14,8 +14,9 @@ const BOOKING_HORIZON_DAYS = 14;
 
 type PublicProfile = Pick<Profile, "id" | "slug" | "display_name" | "profession" | "bio" | "timezone" | "currency">;
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  return { title: `Book ${params.slug.replace(/-/g, " ")}` };
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  return { title: `Book ${slug.replace(/-/g, " ")}` };
 }
 
 function Unavailable() {
@@ -28,13 +29,14 @@ function Unavailable() {
   );
 }
 
-export default async function PublicBookingPage({ params }: { params: { slug: string } }) {
-  const supabase = createClient();
+export default async function PublicBookingPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
 
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("id, slug, display_name, profession, bio, timezone, currency")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .maybeSingle<PublicProfile>();
 
   if (error) return <Unavailable />;

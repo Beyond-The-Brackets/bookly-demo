@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { bookingIdSchema } from "@/lib/validation";
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  if (!bookingIdSchema.safeParse(params.id).success) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!bookingIdSchema.safeParse(id).success) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
 
@@ -18,7 +19,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
     .select(
       "id, starts_at, ends_at, status, price_paid_cents, cancellation_fee_cents, cancelled_at, notes, created_at, service:services(id, name, duration_minutes), client:clients(id, name, email, phone)"
     )
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("profile_id", user.id)
     .maybeSingle();
 

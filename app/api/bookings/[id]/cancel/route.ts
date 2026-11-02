@@ -4,8 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { cancellationFee } from "@/lib/billing";
 import { bookingIdSchema } from "@/lib/validation";
 
-export async function POST(_request: Request, { params }: { params: { id: string } }) {
-  if (!bookingIdSchema.safeParse(params.id).success) {
+export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!bookingIdSchema.safeParse(id).success) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
 
@@ -17,7 +18,7 @@ export async function POST(_request: Request, { params }: { params: { id: string
   const { data: booking } = await supabase
     .from("bookings")
     .select("id, starts_at, status, price_paid_cents")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("profile_id", user.id)
     .maybeSingle();
 

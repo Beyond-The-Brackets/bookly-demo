@@ -18,7 +18,8 @@ function hhmm(time: string) {
   return time.slice(0, 5);
 }
 
-export default async function AvailabilityPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function AvailabilityPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   const { supabase, profile } = await requireProfile();
 
   const { data } = await supabase
@@ -38,8 +39,8 @@ export default async function AvailabilityPage({ searchParams }: { searchParams:
         </p>
       </div>
 
-      {searchParams.error && (
-        <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{searchParams.error}</p>
+      {error && (
+        <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>
       )}
 
       <Card>

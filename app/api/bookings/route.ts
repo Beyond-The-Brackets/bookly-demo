@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   if (!parsed.success) return error(firstError(parsed.error), 400);
 
   const { slug, serviceId, startsAt, name, email, phone, notes } = parsed.data;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")

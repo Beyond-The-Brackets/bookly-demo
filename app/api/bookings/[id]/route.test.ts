@@ -44,7 +44,7 @@ function fakeSupabase() {
 
 vi.mock("@/lib/supabase-server", () => ({ createClient: () => fakeSupabase() }));
 
-const get = (id: string) => GET(new Request(`http://localhost/api/bookings/${id}`), { params: { id } });
+const get = (id: string) => GET(new Request(`http://localhost/api/bookings/${id}`), { params: Promise.resolve({ id }) });
 
 describe("GET /api/bookings/[id]", () => {
   beforeEach(() => {

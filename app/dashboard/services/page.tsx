@@ -16,7 +16,8 @@ import { createService, deleteService, toggleService } from "./actions";
 
 export const metadata: Metadata = { title: "Services" };
 
-export default async function ServicesPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function ServicesPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   const { supabase, profile } = await requireProfile();
 
   const { data } = await supabase
@@ -34,8 +35,8 @@ export default async function ServicesPage({ searchParams }: { searchParams: { e
         <p className="text-muted-foreground">What clients can book, how long it takes and what it costs.</p>
       </div>
 
-      {searchParams.error && (
-        <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{searchParams.error}</p>
+      {error && (
+        <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>
       )}
 
       <Card>
