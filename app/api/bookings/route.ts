@@ -1,16 +1,28 @@
 import { NextResponse } from "next/server";
 
 import { addMinutes } from "@/lib/dates";
+import { clientIp, createRateLimiter } from "@/lib/rate-limit";
 import { isSlotAvailable } from "@/lib/slots";
 import { createClient } from "@/lib/supabase-server";
 import type { Availability, BusyInterval } from "@/lib/types";
 import { bookingRequestSchema, firstError } from "@/lib/validation";
+
+// The booking page is public: cap how fast one address can fill a calendar.
+const rateLimit = createRateLimiter({ limit: 10, windowMs: 60_000 });
 
 function error(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(clientIp(request));
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many booking attempts. Please wait a minute and try again." },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfterSeconds) } }
+    );
+  }
+
   const parsed = bookingRequestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return error(firstError(parsed.error), 400);
 
