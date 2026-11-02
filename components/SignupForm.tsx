@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase";
 import { slugify } from "@/lib/utils";
 import { firstError, signupSchema } from "@/lib/validation";
 
@@ -38,28 +37,20 @@ export function SignupForm() {
     }
 
     setLoading(true);
-    const { displayName, profession, email, password } = parsed.data;
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: displayName,
-          profession,
-          slug: slugify(displayName),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...parsed.data, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
     });
+    const body = (await res.json().catch(() => ({}))) as { error?: string; signedIn?: boolean };
 
-    if (error) {
-      setError(error.message);
+    if (!res.ok) {
+      setError(body.error ?? "We could not create your account. Please try again.");
       setLoading(false);
       return;
     }
 
-    if (!data.session) {
+    if (!body.signedIn) {
       setNotice("Check your inbox to confirm your email, then log in.");
       setLoading(false);
       return;
