@@ -28,6 +28,11 @@ alter table public.bookings add column paid_at timestamptz;
 
 alter table public.profiles add column is_admin boolean not null default false;
 
+-- "Practitioners update their own profile" must not let anyone make themselves
+-- admin: they may only update the columns they own.
+revoke update on public.profiles from anon, authenticated;
+grant update (slug, display_name, profession, bio, timezone, currency) on public.profiles to authenticated;
+
 create table public.discount_codes (
   id uuid primary key default gen_random_uuid(),
   code text not null unique check (code ~ '^[A-Z0-9-]{3,32}$'),
