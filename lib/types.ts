@@ -8,6 +8,7 @@ export interface Profile {
   bio: string | null;
   timezone: string;
   currency: string;
+  is_admin: boolean;
   created_at: string;
 }
 
@@ -50,6 +51,7 @@ export interface Booking {
   price_paid_cents: number;
   cancellation_fee_cents: number | null;
   cancelled_at: string | null;
+  paid_at: string | null;
   notes: string | null;
   created_at: string;
 }
@@ -61,6 +63,15 @@ export interface BookingWithRelations
   > {
   service: Pick<Service, "name" | "duration_minutes"> | null;
   client: Pick<Client, "name" | "email" | "phone"> | null;
+}
+
+export interface DiscountCode {
+  id: string;
+  code: string;
+  percent_off: number;
+  expires_at: string | null;
+  created_by: string | null;
+  created_at: string;
 }
 
 export interface BusyInterval {

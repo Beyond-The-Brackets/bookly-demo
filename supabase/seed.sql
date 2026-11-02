@@ -104,3 +104,6 @@ join public.profiles p on p.id = s.profile_id
 cross join lateral (
   select ((current_date + s.day_offset)::timestamp + s.local_time) at time zone p.timezone as start_at
 ) t;
+
+-- Alex runs the platform: the only admin.
+update public.profiles set is_admin = true where slug = 'demo-coach';
