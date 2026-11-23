@@ -28,4 +28,4 @@ if [[ "${1:-}" == "--db" ]]; then
 fi
 
 echo "Bookly is back at demo-start ($(git rev-parse --short HEAD))."
-pnpm -s test:repro >/dev/null 2>&1 && echo "Warning: the repro tests pass, a problem is already fixed." >&2 || echo "The 3 problems are there (pnpm test:repro fails, as it should)."
+pnpm -s test >/dev/null 2>&1 && echo "The test suite is green, as it should be before a take." || echo "Warning: the test suite fails before the take." >&2
